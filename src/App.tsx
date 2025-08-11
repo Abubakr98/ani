@@ -1,48 +1,48 @@
 import Hyperspeed from './Hyperspeed.tsx'
 
-function App() {
+const  parseNumber  = (value: string | null, fallback: number, min?: number, max?: number): number  => {
+    if (value === null) return fallback
+    const num = parseFloat(value)
+    if (Number.isNaN(num)) return fallback
+    if (min !== undefined && num < min) return fallback
+    if (max !== undefined && num > max) return fallback
+    return num
+}
+
+const  parseBoolean  = (value: string | null, fallback: boolean): boolean  => {
+    if (value === null) return fallback
+    const val = value.trim().toLowerCase()
+    if (['true', '1', 'yes', 'y'].includes(val)) return true
+    if (['false', '0', 'no', 'n'].includes(val)) return false
+    return fallback
+}
+
+const  parseColor  = (value: string | null, fallback: number[]): number[]  => {
+    if (!value) return fallback
+    const parts = value.split(',').map(p => parseFloat(p.trim()))
+    if (parts.length !== 3 || parts.some(n => Number.isNaN(n) || n < 0 || n > 1)) {
+        return fallback
+    }
+    return parts
+}
+
+const App = () => {
+    const params = new URLSearchParams(window.location.search)
+
+    const amplitude = parseNumber(params.get('amplitude'), 0.3, 0, 5)
+    const distance = parseNumber(params.get('distance'), 0.3, 0, 2)
+    const enableMouseInteraction = parseBoolean(params.get('enableMouseInteraction'), true)
+    const color = parseColor(params.get('color'), [0.3, 0.3, 0.3])
+
     return (
-        // <div style={{ width: '100vw', height: '100vh', margin: 0, padding: 0, overflow: 'hidden' }}>
-        <Hyperspeed
-            effectOptions={{
-                onSpeedUp: () => { },
-                onSlowDown: () => { },
-                distortion: 'turbulentDistortion',
-                length: 400,
-                roadWidth: 10,
-                islandWidth: 2,
-                lanesPerRoad: 4,
-                fov: 90,
-                fovSpeedUp: 150,
-                speedUp: 2,
-                carLightsFade: 0.4,
-                totalSideLightSticks: 20,
-                lightPairsPerRoadWay: 40,
-                shoulderLinesWidthPercentage: 0.05,
-                brokenLinesWidthPercentage: 0.1,
-                brokenLinesLengthPercentage: 0.5,
-                lightStickWidth: [0.12, 0.5],
-                lightStickHeight: [1.3, 1.7],
-                movingAwaySpeed: [60, 80],
-                movingCloserSpeed: [-120, -160],
-                carLightsLength: [400 * 0.03, 400 * 0.2],
-                carLightsRadius: [0.05, 0.14],
-                carWidthPercentage: [0.3, 0.5],
-                carShiftX: [-0.8, 0.8],
-                carFloorSeparation: [0, 5],
-                colors: {
-                    roadColor: 0x080808,
-                    islandColor: 0x0a0a0a,
-                    background: 0x000000,
-                    shoulderLines: 0xFFFFFF,
-                    brokenLines: 0xFFFFFF,
-                    leftCars: [0xD856BF, 0x6750A2, 0xC247AC],
-                    rightCars: [0x03B3C3, 0x0E5EA5, 0x324555],
-                    sticks: 0x03B3C3,
-                }
-            }}
-        />
-        // </div>
+        <div style={{ width: '100vw', height: '100vh', margin: 0, padding: 0, overflow: 'hidden' }}>
+            <Hyperspeed
+                amplitude={amplitude}
+                distance={distance}
+                enableMouseInteraction={enableMouseInteraction}
+                color={color}
+            />
+        </div>
     )
 }
 
